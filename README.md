@@ -43,18 +43,21 @@ chmod +x c
 ### Basic Usage
 
 ```bash
-# Analyze all Python files
+# Analyze all Python files (parallel - each file separately)
 ./c '**/*.py' 'analyze code quality and rate 1-10'
 
-# Add type hints (agentic mode)
+# Add type hints (agentic mode with auto-accept)
 ./c '**/*.py' 'add type hints where missing' -a -p 12
+
+# Aggregate analysis (see ALL files at once)
+./c 'results/*.txt' 'summarize findings across all files' --cat
+
+# Or use stdin for aggregation
+cat analysis/*.txt | ./c - 'what are the top 3 issues?'
 
 # Use instruction from file (for long/complex instructions)
 echo "Review code for security issues" > instruction.txt
 ./c '**/*.py' -i instruction.txt -o security_report/ -p 16
-
-# Verbose mode (see what's happening)
-./c '**/*.py' 'count functions' -v
 ```
 
 ---

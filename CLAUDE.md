@@ -135,6 +135,45 @@ Don't use `-a` when:
 
 ---
 
+## Understanding Parallel vs Aggregate Modes
+
+**CRITICAL**: The `c` script has **two distinct modes of operation**:
+
+### Parallel Mode (Default)
+**Each Claude instance sees ONE file** - processes files independently in parallel.
+
+```bash
+./c '*.py' 'analyze this file' -p 8
+# Result: 8 Claude instances, each analyzing ONE file
+```
+
+**Use for**: Transformations, independent analysis, per-file operations
+
+### Aggregate Mode (--cat or stdin)
+**Single Claude instance sees ALL files** - true aggregation across all content.
+
+```bash
+./c '*.py' 'find common patterns across ALL files' --cat
+# OR: cat *.py | ./c - 'find common patterns'
+# Result: 1 Claude instance sees ALL file contents
+```
+
+**Use for**: Cross-file analysis, summaries, finding patterns across codebase
+
+### Two-Stage Pattern: Parallel → Aggregate
+Most powerful pattern: analyze each file separately, then aggregate results.
+
+```bash
+# Stage 1: Parallel analysis (each file independently)
+./c 'src/**/*.py' 'analyze complexity (JSON)' -o analysis/ -p 16
+
+# Stage 2: Aggregate results (see all analyses together)
+./c 'analysis/*.txt' 'find top 10 most complex files' --cat
+# OR: cat analysis/* | ./c - 'summarize overall complexity trends'
+```
+
+---
+
 ## Core Patterns
 
 ### 1. Parallel Analysis
@@ -191,14 +230,15 @@ pytest
 **Pattern**: Claude analyzing its own past work
 
 ```bash
-# Generate code reviews
+# Generate code reviews (parallel - each file separately)
 ./c 'src/**/*.py' -i templates/code_review.txt -o reviews/ -p 16
 
-# Claude reviews its own reviews (meta-analysis)
-./c 'reviews/*.txt' 'summarize key issues across all reviews' -o meta_review/
+# Claude reviews its own reviews (aggregate mode - sees ALL reviews)
+./c 'reviews/*.txt' 'summarize key issues across all reviews' --cat > meta_review.txt
+# OR: cat reviews/* | ./c - 'summarize key issues' > meta_review.txt
 
 # Generate action items
-cat meta_review/* | jq -s 'map(.issues) | flatten | group_by(.type) | map({type: .[0].type, count: length})'
+jq -s 'map(.issues) | flatten | group_by(.type) | map({type: .[0].type, count: length})' reviews/*.txt
 ```
 
 **Use Case**: Meta-programming, self-improvement, quality assurance

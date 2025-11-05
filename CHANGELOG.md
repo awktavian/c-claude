@@ -8,8 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Aggregate mode** (`--cat` flag): Concatenate all files and pass to single Claude instance
+- **Stdin mode** (`-` as first arg): Accept piped input for true aggregation
+- Support for shell-expanded file arguments (e.g., `./c *.md 'task'`)
+- Clear documentation on parallel vs aggregate modes
+- Examples of two-stage parallel→aggregate workflows
+
+### Changed
+- Updated CLAUDE.md with accurate aggregation patterns
+- Clarified when each Claude instance sees one file vs all files
+- Added mode indicators in verbose output
+
+### Fixed
+- File argument parsing now handles both quoted globs and shell expansion
+- Corrected misleading examples that suggested parallel mode could aggregate
+
+## [1.0.0] - 2025-11-04
+
+### Added
 - Initial public release
-- Core `c` script (2,408 bytes, 57 lines)
+- Core `c` script with parallel processing
 - Comprehensive CLAUDE.md for Claude Code integration
 - MIT License
 - Contributing guidelines
@@ -26,15 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive error handling
 - Temp file management with cleanup
 - Cross-platform support (macOS, Linux, WSL2)
-
-## [1.0.0] - 2025-11-04
-
-### Added
-- Initial release of c-claude
-- Batch processor for Claude Code
-- Support for parallel execution
-- Multiple execution modes
-- Comprehensive documentation
 
 ---
 
